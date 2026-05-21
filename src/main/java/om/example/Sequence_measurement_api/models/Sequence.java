@@ -13,17 +13,7 @@ public class Sequence {
     LocalDateTime timestamp = LocalDateTime.now();
     List<String> value = new CopyOnWriteArrayList<>();
     private String input;
-    private static String sourceIP;
-
-    static {
-        try {
-            ServerSocket server = new ServerSocket(8080);
-            Socket client = server.accept(); // waits for connection
-            sourceIP = client.getInetAddress().getHostAddress();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    private String sourceIP;
 
     public long getId() {
         return id;
@@ -47,6 +37,14 @@ public class Sequence {
 
     public void setInput(String input) {
         this.input = input;
+    }
+
+    public void setSourceIP(String sourceIP) {
+        this.sourceIP = sourceIP;
+    }
+
+    public String getSourceIP() {
+        return sourceIP;
     }
 
     public boolean isValid() {

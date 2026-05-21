@@ -1,4 +1,9 @@
 # Change Log
+## Version[0.0.3] - 21-05-2026
+### Fixed
+- Added PUT request to edit using input with endpoint `/convert-measurements/{id}`
+- Added DELETE request with endpoint `/convert-measurements/{id}`.
+- fixed error related to getting source IP rather than ServerSocket used HttpServletRequest.
 
 ## Version[0.0.2] - 21-05-2026
 ### Fixed
