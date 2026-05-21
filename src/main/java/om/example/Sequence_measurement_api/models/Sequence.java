@@ -37,10 +37,6 @@ public class Sequence {
         this.value = value;
     }
 
-    public boolean isValid(){
-        return true;
-    }
-
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
@@ -51,6 +47,12 @@ public class Sequence {
 
     public void setInput(String input) {
         this.input = input;
+    }
+
+    public boolean isValid() {
+        if (input == null || input.isEmpty()) return false;
+        // a-z and underscore input allowed
+        return input.matches("[a-z_]+");
     }
 
 }

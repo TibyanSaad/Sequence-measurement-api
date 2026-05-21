@@ -21,6 +21,11 @@ public class SequenceController {
     @GetMapping("/convert-measurements")
     public ResponseEntity<List<String>> convertMeasurements(@RequestParam String input) {
         Sequence sequence = sequenceService.decode(input);
+
+        if (!sequence.isValid()) {
+            return ResponseEntity.badRequest().body(List.of("invalid sequence format"));
+        }
+
         return ResponseEntity.ok(sequence.getValue());
     }
 }
