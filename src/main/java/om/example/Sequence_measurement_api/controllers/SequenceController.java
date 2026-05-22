@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class SequenceController {
@@ -35,7 +36,13 @@ public class SequenceController {
     @PutMapping("/convert-measurements/{id}")
     public ResponseEntity<List<String>> updateMeasurement(
             @PathVariable long id,
-            @RequestParam String input) {
+            @RequestBody Map<String, String> body) {
+
+        String input = body.get("input");
+
+        if (input == null || input.isEmpty()) {
+            return ResponseEntity.badRequest().body(List.of("input field is required"));
+        }
 
         Sequence updated = sequenceService.update(id, input);
 

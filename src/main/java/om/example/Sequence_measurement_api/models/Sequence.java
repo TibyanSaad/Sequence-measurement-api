@@ -1,56 +1,52 @@
 package om.example.Sequence_measurement_api.models;
 
-import java.net.ServerSocket;
-import java.net.Socket;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
+@Entity
+@Table(name = "SEQUENCES")
 public class Sequence {
-    private static final AtomicLong counter = new AtomicLong();
-    private final long id = counter.incrementAndGet();
-    LocalDateTime timestamp = LocalDateTime.now();
-    List<String> value = new CopyOnWriteArrayList<>();
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_gen")
+    @SequenceGenerator(name = "seq_gen", sequenceName = "SEQUENCE_SEQ", allocationSize = 1)
+    private Long id;
+
+    @Column(name = "TIMESTAMP")
+    private LocalDateTime timestamp = LocalDateTime.now();
+
+    @Column(name = "OUTPUT")
+    private String value;
+
+    @Column(name = "INPUT")
     private String input;
+
+    @Column(name = "SOURCE_IP")
     private String sourceIP;
 
-    public long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
     public List<String> getValue() {
-        return value;
+        if (value == null || value.isEmpty()) return List.of();
+        return Arrays.asList(value.split(","));
     }
 
-    public void setValue(List<String> value) {
-        this.value = value;
+    public void setValue(List<String> values) {
+        this.value = String.join(",", values);
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
+    public LocalDateTime getTimestamp() { return timestamp; }
 
-    public String getInput() {
-        return input;
-    }
+    public String getInput() { return input; }
+    public void setInput(String input) { this.input = input; }
 
-    public void setInput(String input) {
-        this.input = input;
-    }
-
-    public void setSourceIP(String sourceIP) {
-        this.sourceIP = sourceIP;
-    }
-
-    public String getSourceIP() {
-        return sourceIP;
-    }
+    public String getSourceIP() { return sourceIP; }
+    public void setSourceIP(String sourceIP) { this.sourceIP = sourceIP; }
 
     public boolean isValid() {
         if (input == null || input.isEmpty()) return false;
-        // a-z and underscore input allowed
         return input.matches("[a-z_]+");
     }
-
 }
