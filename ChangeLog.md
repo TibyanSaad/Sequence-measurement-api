@@ -1,4 +1,10 @@
 # Change Log
+
+## Version[0.0.5] - 22-05-2026
+### Fixed
+- User is able to check all the history records of previous requests.
+- Added GET request query for specific IDs.
+
 ## Version[0.0.4] - 22-05-2026
 ### Fixed
 - Added `SequenceRepo` interface for DB connection.

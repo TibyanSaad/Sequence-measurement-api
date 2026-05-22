@@ -33,6 +33,24 @@ public class SequenceController {
         return ResponseEntity.ok(sequence.getValue());
     }
 
+    @GetMapping("/convert-measurements/{id}")
+    public ResponseEntity<Sequence> getMeasurementById(@PathVariable long id) {
+        Sequence sequence = sequenceService.getById(id);
+        if (sequence == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(sequence);
+    }
+
+    @GetMapping("/convert-measurements/all")
+    public ResponseEntity<List<Sequence>> getAllMeasurements() {
+        List<Sequence> all = sequenceService.getAll();
+        if (all.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(all);
+    }
+
     @PutMapping("/convert-measurements/{id}")
     public ResponseEntity<List<String>> updateMeasurement(
             @PathVariable long id,

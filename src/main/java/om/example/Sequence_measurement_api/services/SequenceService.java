@@ -30,6 +30,14 @@ public class SequenceService {
         return sequenceRepo.save(sequence);
     }
 
+    public List<Sequence> getAll() {
+        return sequenceRepo.findAll();
+    }
+
+    public Sequence getById(long id) {
+        return sequenceRepo.findById(id).orElse(null);
+    }
+
     public Sequence update(long id, String newInput) {
         Sequence sequence = sequenceRepo.findById(id).orElse(null);
         if (sequence == null) return null;
