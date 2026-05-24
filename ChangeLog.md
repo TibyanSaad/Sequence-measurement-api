@@ -1,4 +1,11 @@
 # Change Log
+## Version[0.0.6] - 24-05-2026
+### Fixed
+- `Sequence.java`: removed all JPA annotations, now a pure domain object. `value` field changed from comma-separated `String` to `List<String>` directly. Added `setId()` and `setTimestamp()` setters.
+- `SequenceHistory.java`: new class that takes over all JPA annotations and DB mapping from `Sequence`. Handles comma-separated conversion of `value` via `fromSequence()` and `toSequence()` methods.
+- `SequenceRepo.java`: updated to use `SequenceHistory` instead of `Sequence` as the JPA entity.
+- `SequenceService.java`: added `saveAndReturn()` helper to handle `Sequence` ↔ `SequenceHistory` conversion on every save. Added `getAllHistory()` for raw DB access. Added `MAX_Z_CHAIN = 100` constant and full edge case handling in `computeValues()`.
+- `SequenceController.java`: added `GET /convert-measurements/history` endpoint that returns raw `SequenceHistory` records from the DB.
 
 ## Version[0.0.5] - 22-05-2026
 ### Fixed
