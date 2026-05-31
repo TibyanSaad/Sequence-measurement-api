@@ -11,8 +11,6 @@ import java.util.List;
 @Service
 public class SequenceService {
 
-    // Hard cap on a single number's z-chain length. 100 consecutive z's would
-    // already be 2600+, which is well beyond any plausible legitimate input.
     private static final int MAX_Z_CHAIN = 100;
 
     private final SequenceRepo sequenceRepo;
@@ -27,7 +25,7 @@ public class SequenceService {
         sequence.setSourceIP(sourceIP);
 
         if (!sequence.isValid()) {
-            List<String> err = new ArrayList<String>();
+            List<Object> err = new ArrayList<>();
             err.add("invalid sequence format");
             sequence.setValue(err);
             return saveAndReturn(sequence);
@@ -39,18 +37,13 @@ public class SequenceService {
 
     public List<Sequence> getAll() {
         List<SequenceHistory> rows = sequenceRepo.findAll();
-        List<Sequence> out = new ArrayList<Sequence>();
+        List<Sequence> out = new ArrayList<>();
         for (SequenceHistory row : rows) {
             out.add(row.toSequence());
         }
         return out;
     }
 
-    /**
-     * Returns persistence entities directly, with no domain conversion.
-     * Useful for raw inspection/debugging. Note: this leaks the JPA mapping
-     * shape to whoever calls it — caller beware.
-     */
     public List<SequenceHistory> getAllHistory() {
         return sequenceRepo.findAll();
     }
@@ -69,7 +62,7 @@ public class SequenceService {
         sequence.setInput(newInput == null ? null : newInput.toLowerCase());
 
         if (!sequence.isValid()) {
-            List<String> err = new ArrayList<String>();
+            List<Object> err = new ArrayList<>();
             err.add("invalid sequence format");
             sequence.setValue(err);
             return saveAndReturn(sequence);
@@ -85,26 +78,17 @@ public class SequenceService {
         return true;
     }
 
-    // Saves the domain Sequence by converting to SequenceHistory, then maps
-    // the persisted id back onto the domain object so the caller sees the
-    // generated id without needing a second conversion.
     private Sequence saveAndReturn(Sequence sequence) {
         SequenceHistory saved = sequenceRepo.save(SequenceHistory.fromSequence(sequence));
         sequence.setId(saved.getId());
         return sequence;
     }
 
-    /**
-     * Decode the input into a list of per-package sums.
-     * Any malformed package short-circuits processing: the error message is
-     * appended to the result list and decoding stops.
-     */
-    private List<String> computeValues(String normalized) {
-        List<String> results = new ArrayList<String>();
+    private List<Object> computeValues(String normalized) {
+        List<Object> results = new ArrayList<>();
         int i = 0;
 
         while (i < normalized.length()) {
-            // ---- Read the package count ----
             int count = 0;
             int zChain = 0;
             boolean countTerminated = false;
@@ -113,8 +97,6 @@ public class SequenceService {
                 char c = normalized.charAt(i++);
                 if (c == 'z') {
                     zChain++;
-                    // Edge case: very large z-chain in the count.
-                    // Caps runaway / abusive inputs. Same cap applies to value reads below.
                     if (zChain > MAX_Z_CHAIN) {
                         results.add("malformed package: number exceeds maximum allowed size");
                         return results;
@@ -127,30 +109,21 @@ public class SequenceService {
                 }
             }
 
-            // Edge case: trailing z with no terminator (also covers "input is only z's
-            // with no terminator anywhere" — that's just this case when it triggers on
-            // the very first package).
             if (!countTerminated) {
                 results.add("malformed package: unterminated number");
                 return results;
             }
 
-            // Edge case: zero count. An underscore as the count, or any sequence
-            // of characters summing to zero (only '_' can do this since 'z' adds 26),
-            // produces an empty package whose sum is 0. This also covers the
-            // "underscore as count giving zero packages" case — it's the same code path.
             if (count == 0) {
-                results.add("0");
+                results.add(0);
                 continue;
             }
 
-            // ---- Read 'count' values and sum them ----
             int sum = 0;
             int valuesRead = 0;
 
             for (int j = 0; j < count; j++) {
                 if (i >= normalized.length()) {
-                    // Ran out of input mid-package. Handled below after the loop.
                     break;
                 }
 
@@ -162,7 +135,6 @@ public class SequenceService {
                     char c = normalized.charAt(i++);
                     if (c == 'z') {
                         valueZChain++;
-                        // Edge case: very large z-chain inside a value.
                         if (valueZChain > MAX_Z_CHAIN) {
                             results.add("malformed package: number exceeds maximum allowed size");
                             return results;
@@ -175,7 +147,6 @@ public class SequenceService {
                     }
                 }
 
-                // Edge case: a value's z-chain never terminated (input ended mid-number).
                 if (!valueTerminated) {
                     results.add("malformed package: unterminated number");
                     return results;
@@ -185,16 +156,12 @@ public class SequenceService {
                 valuesRead++;
             }
 
-            // Edge case: fewer values than count. Covers two of your listed cases:
-            //   - "fewer values than count" (general)
-            //   - "single character that is only a count with no values" (specific:
-            //     count > 0, valuesRead == 0)
             if (valuesRead < count) {
                 results.add("malformed package: expected " + count + " values but found " + valuesRead);
                 return results;
             }
 
-            results.add(String.valueOf(sum));
+            results.add(sum);
         }
 
         return results;

@@ -26,7 +26,7 @@ public class SequenceController {
     }
 
     @GetMapping("/convert-measurements")
-    public ResponseEntity<List<String>> convertMeasurements(@RequestParam String input, HttpServletRequest request) {
+    public ResponseEntity<List<Object>> convertMeasurements(@RequestParam String input, HttpServletRequest request) {
         String clientIP = getClientIP(request);
         Sequence sequence = sequenceService.decode(input, clientIP);
         if (!sequence.isValid()) {
@@ -49,8 +49,6 @@ public class SequenceController {
         return ResponseEntity.ok(all);
     }
 
-    // Returns raw persistence entities. Intentionally bypasses the domain
-    // conversion — see SequenceService.getAllHistory().
     @GetMapping("/convert-measurements/history")
     public ResponseEntity<List<SequenceHistory>> getHistory() {
         List<SequenceHistory> history = sequenceService.getAllHistory();
@@ -59,7 +57,7 @@ public class SequenceController {
     }
 
     @PutMapping("/convert-measurements/{id}")
-    public ResponseEntity<List<String>> updateMeasurement(@PathVariable long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<List<Object>> updateMeasurement(@PathVariable long id, @RequestBody Map<String, String> body) {
         String input = body.get("input");
         if (input == null || input.isEmpty()) return ResponseEntity.badRequest().body(List.of("input field is required"));
         Sequence updated = sequenceService.update(id, input);

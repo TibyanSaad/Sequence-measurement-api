@@ -4,18 +4,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Pure domain object. No persistence concerns — all JPA mapping lives in SequenceHistory.
- * The value field is a plain List<String>; serialization to/from the comma-separated
- * OUTPUT column is the entity's job, not this class's.
- */
 public class Sequence {
 
     private Long id;
     private LocalDateTime timestamp = LocalDateTime.now();
     private String input;
     private String sourceIP;
-    private List<String> value = new ArrayList<>();
+    private List<Object> value = new ArrayList<>();
 
     public Sequence() {}
 
@@ -31,11 +26,11 @@ public class Sequence {
     public String getSourceIP() { return sourceIP; }
     public void setSourceIP(String sourceIP) { this.sourceIP = sourceIP; }
 
-    public List<String> getValue() {
+    public List<Object> getValue() {
         return value == null ? new ArrayList<>() : value;
     }
 
-    public void setValue(List<String> value) {
+    public void setValue(List<Object> value) {
         this.value = value;
     }
 
