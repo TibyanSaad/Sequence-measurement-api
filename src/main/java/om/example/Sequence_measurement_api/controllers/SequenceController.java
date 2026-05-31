@@ -30,7 +30,7 @@ public class SequenceController {
         String clientIP = getClientIP(request);
         Sequence sequence = sequenceService.decode(input, clientIP);
         if (!sequence.isValid()) {
-            return ResponseEntity.badRequest().body(List.of("invalid sequence format"));
+            return ResponseEntity.badRequest().body(List.of());
         }
         return ResponseEntity.ok(sequence.getValue());
     }
@@ -59,10 +59,10 @@ public class SequenceController {
     @PutMapping("/convert-measurements/{id}")
     public ResponseEntity<List<Object>> updateMeasurement(@PathVariable long id, @RequestBody Map<String, String> body) {
         String input = body.get("input");
-        if (input == null || input.isEmpty()) return ResponseEntity.badRequest().body(List.of("input field is required"));
+        if (input == null || input.isEmpty()) return ResponseEntity.badRequest().body(List.of());
         Sequence updated = sequenceService.update(id, input);
         if (updated == null) return ResponseEntity.notFound().build();
-        if (!updated.isValid()) return ResponseEntity.badRequest().body(List.of("invalid sequence format"));
+        if (!updated.isValid()) return ResponseEntity.badRequest().body(List.of());
         return ResponseEntity.ok(updated.getValue());
     }
 

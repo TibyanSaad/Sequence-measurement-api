@@ -25,9 +25,7 @@ public class SequenceService {
         sequence.setSourceIP(sourceIP);
 
         if (!sequence.isValid()) {
-            List<Object> err = new ArrayList<>();
-            err.add("invalid sequence format");
-            sequence.setValue(err);
+            sequence.setValue(new ArrayList<>());
             return saveAndReturn(sequence);
         }
 
@@ -62,9 +60,7 @@ public class SequenceService {
         sequence.setInput(newInput == null ? null : newInput.toLowerCase());
 
         if (!sequence.isValid()) {
-            List<Object> err = new ArrayList<>();
-            err.add("invalid sequence format");
-            sequence.setValue(err);
+            sequence.setValue(new ArrayList<>());
             return saveAndReturn(sequence);
         }
 
@@ -98,7 +94,6 @@ public class SequenceService {
                 if (c == 'z') {
                     zChain++;
                     if (zChain > MAX_Z_CHAIN) {
-                        results.add("malformed package: number exceeds maximum allowed size");
                         return results;
                     }
                     count += 26;
@@ -110,7 +105,6 @@ public class SequenceService {
             }
 
             if (!countTerminated) {
-                results.add("malformed package: unterminated number");
                 return results;
             }
 
@@ -136,7 +130,6 @@ public class SequenceService {
                     if (c == 'z') {
                         valueZChain++;
                         if (valueZChain > MAX_Z_CHAIN) {
-                            results.add("malformed package: number exceeds maximum allowed size");
                             return results;
                         }
                         value += 26;
@@ -148,7 +141,6 @@ public class SequenceService {
                 }
 
                 if (!valueTerminated) {
-                    results.add("malformed package: unterminated number");
                     return results;
                 }
 
@@ -157,7 +149,6 @@ public class SequenceService {
             }
 
             if (valuesRead < count) {
-                results.add("malformed package: expected " + count + " values but found " + valuesRead);
                 return results;
             }
 
